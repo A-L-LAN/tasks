@@ -39,6 +39,9 @@ export default function Home() {
       <Typography variant="h3" gutterBottom>
         Task Manager
       </Typography>
+      <Typography variant="h6" gutterBottom>
+        Stay organized and boost your <Typography component="span" style={{ fontWeight: 'bold' }}>productivity</Typography> with our Task Manager. Easily <Typography component="span" style={{ fontWeight: 'bold' }}>add</Typography>, <Typography component="span" style={{ fontWeight: 'bold' }}>view</Typography>, and <Typography component="span" style={{ fontWeight: 'bold' }}>delete</Typography> tasks, and ensure your tasks are free from <Typography component="span" style={{ fontWeight: 'bold' }}>negative sentiment</Typography> with our built-in sentiment analysis.
+      </Typography>
       <TaskForm onAdd={addTask} />
       <TaskList tasks={tasks} onDelete={deleteTask} />
     </Container>
