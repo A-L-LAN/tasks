@@ -11,6 +11,7 @@ export default function TaskForm({ onAdd }) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   useEffect(() => {
+    // Load the toxicity model
     toxicity.load(threshold).then(mod => {
       console.log('Toxicity model loaded');
       setModel(mod);
@@ -23,6 +24,7 @@ export default function TaskForm({ onAdd }) {
     e.preventDefault();
     if (model) {
       try {
+        // Analyze the sentiment of the task
         const predictions = await model.classify([task]);
         console.log('Predictions:', predictions);
         const toxic = predictions.some(prediction => prediction.results.some(res => res.match));
@@ -39,6 +41,7 @@ export default function TaskForm({ onAdd }) {
         return;
       }
     }
+    // If not toxic, add the task
     onAdd(task);
     setTask('');
     setError('');
