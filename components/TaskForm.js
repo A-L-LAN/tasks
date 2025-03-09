@@ -1,0 +1,81 @@
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, Snackbar, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import * as toxicity from '@tensorflow-models/toxicity';
+
+const threshold = 0.9;
+
+export default function TaskForm({ onAdd, onUpdate, editingTask, clearEditing }) {
+  const [task, setTask] = useState('');
+  const [category, setCategory] = useState('Work');
+  const [model, setModel] = useState(null);
+  const [error, setError] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+  useEffect(() => {
+    toxicity.load(threshold).then(mod => {
+      setModel(mod);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (editingTask) {
+      setTask(editingTask.task);
+      setCategory(editingTask.category || 'Work');
+    }
+  }, [editingTask]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (model) {
+      const predictions = await model.classify([task]);
+      const toxic = predictions.some(pred => pred.results.some(res => res.match));
+      if (toxic) {
+        setError('Task contains negative sentiment. Please revise.');
+        setSnackbarOpen(true);
+        return;
+      }
+    }
+    if (editingTask) {
+      onUpdate(editingTask.id, task, category);
+    } else {
+      onAdd(task, category);
+    }
+    setTask('');
+    setCategory('Work');
+    setError('');
+    clearEditing();
+  };
+
+  return (
+    <>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          label="New Task"
+          variant="outlined"
+          value={task}
+          onChange={(e) => setTask(e.target.value)}
+          error={Boolean(error)}
+          helperText={error}
+          fullWidth
+        />
+        <FormControl fullWidth>
+          <InputLabel>Category</InputLabel>
+          <Select value={category} onChange={(e) => setCategory(e.target.value)}>
+            <MenuItem value="Work">Work</MenuItem>
+            <MenuItem value="Personal">Personal</MenuItem>
+            <MenuItem value="Urgent">Urgent</MenuItem>
+          </Select>
+        </FormControl>
+        <Button type="submit" variant="contained" color="primary">
+          {editingTask ? 'Update' : 'Add'}
+        </Button>
+      </form>
+      <Snackbar 
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        message={error}
+        onClose={() => setSnackbarOpen(false)}
+      />
+    </>
+  );
+}
