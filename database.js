@@ -23,6 +23,7 @@ db.serialize(() => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       task TEXT NOT NULL,
       category TEXT,
+      priority TEXT CHECK(priority IN ('Low', 'Medium', 'High')) DEFAULT 'Medium',
       userId INTEGER NOT NULL,
       FOREIGN KEY (userId) REFERENCES users(id)
     )
@@ -30,5 +31,3 @@ db.serialize(() => {
 });
 
 module.exports = db;
-
-

@@ -3,21 +3,21 @@ import db from "../../database";
 
 export default async (req, res) => {
 if (req.method === "POST") {  // Ensure both task and userId are provided
-    const { task, userId, category } = req.body;  // Get userId from request
+    const { task, userId, category, priority = "Medium" } = req.body;  // Get userId from request
   
-    if (!task || !userId || !category) {
-      return res.status(400).json({ error: "Task, userId, and category are required" });
+    if (!task || !userId || !category || !priority) {
+      return res.status(400).json({ error: "Task, userId, category, and priority are required" });
     }
   
     db.run(
-      "INSERT INTO tasks (task, userId, category) VALUES (?, ?, ?)",
-      [task, userId, category],
+      "INSERT INTO tasks (task, userId, category, priority) VALUES (?, ?, ?, ?)",
+      [task, userId, category, priority],
       function (err) {
         if (err) {
-          console.error("Error inserting task:", err.message);
+          console.error("Error inserting task:", err.message); 
           return res.status(500).json({ error: err.message });
         }
-        const newTask = { id: this.lastID, task, userId, category };
+        const newTask = { id: this.lastID, task, userId, category, priority };
         console.log("Task inserted successfully:", newTask);
         res.json(newTask);
       }
@@ -29,7 +29,7 @@ if (req.method === "POST") {  // Ensure both task and userId are provided
   }
 
   const userId = session.user.id; // Get logged-in user ID
-  db.all("SELECT id, task, category FROM tasks WHERE userId = ?", [userId], (err, rows) => {
+  db.all("SELECT id, task, category, priority FROM tasks WHERE userId = ?", [userId], (err, rows) => {
     if (err) {
       console.error("Error fetching tasks:", err.message);
       return res.status(500).json({ error: err.message });
@@ -58,15 +58,15 @@ if (req.method === "POST") {  // Ensure both task and userId are provided
       }
     );
   }else if (req.method === "PUT") {
-  const { id, task, userId, category } = req.body;  // Ensure userId is included
+  const { id, task, userId, category, priority } = req.body;   // Ensure userId is included
 
-  if (!id || !task || !userId || !category) {
-    return res.status(400).json({ error: "Task ID, task content, userId, and category are required" });
+  if (!id || !task || !userId || !category || !priority) {
+    return res.status(400).json({ error: "Task ID, task content, userId, category, and priority are required" });
   }
 
   db.run(
-    "UPDATE tasks SET task = ?, category = ? WHERE id = ? AND userId = ?",
-    [task, category, id, userId],
+    "UPDATE tasks SET task = ?, category = ?, priority = ? WHERE id = ? AND userId = ?",
+    [task, category, priority, id, userId],
     function (err) {
       if (err) return res.status(500).json({ error: err.message });
       if (this.changes === 0) return res.status(403).json({ error: "Task not found or unauthorized" });

@@ -31,7 +31,7 @@ export default function Home() {
     }
   }, [session]);
 
-    const addTask = (task, category) => {
+    const addTask = (task, category, priority) => {
       const userId = currentUser?.id; // Assume currentUser is from state/context
       if (!session?.user?.id) {
         console.error("Error: userId is missing");
@@ -41,23 +41,22 @@ export default function Home() {
       fetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task, category, userId: session.user.id }), // Use session.user.id directly
+        body: JSON.stringify({ task, category, priority, userId: session.user.id }), // Use session.user.id directly
       })
         .then((res) => res.json())
         .then((newTask) => setTasks([...tasks, newTask]))
         .catch((error) => console.error("Error adding task:", error));
     };
 
-
-  const updateTask = (id, task, category) => {
+  const updateTask = (id, task, category, priority) => {
     fetch("/api/tasks", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, task, category}),
+      body: JSON.stringify({ id, task, category, priority}),
     })
       .then((res) => res.json())
       .then(() => {
-        setTasks(tasks.map((t) => (t.id === id ? { ...t, task, category } : t)));
+        setTasks(tasks.map((t) => (t.id === id ? { ...t, task, category, priority } : t)));
         setEditingTask(null);
       });
   };

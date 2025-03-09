@@ -11,7 +11,7 @@ export default function TaskList({ tasks = [], onDelete, onEdit }) {
         console.log("Rendering task:", task);
         return (
           <ListItem key={task.id}>
-            <ListItemText primary={task.task} secondary={`Category: ${task.category}`} />
+            <ListItemText primary={task.task} secondary={`Category: ${task.category} | Priority: ${task.priority}`} />
             <IconButton edge="end" aria-label="edit" onClick={() => onEdit(task)}>
               <EditIcon />
             </IconButton>
@@ -24,4 +24,3 @@ export default function TaskList({ tasks = [], onDelete, onEdit }) {
     </List>
   );
 }
-
