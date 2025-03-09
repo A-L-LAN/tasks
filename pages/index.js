@@ -52,7 +52,7 @@ export default function Home() {
     fetch("/api/tasks", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, task, category, priority}),
+      body: JSON.stringify({ id, task, category, priority, userId: session.user.id }), // Ensure userId is included
     })
       .then((res) => res.json())
       .then(() => {
@@ -61,12 +61,16 @@ export default function Home() {
       });
   };
   
-
   const deleteTask = (id) => {
-    fetch(`/api/tasks?id=${id}`, { method: "DELETE" })
+    fetch(`/api/tasks?id=${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, userId: session.user.id }), // Ensure userId is included
+    })
       .then((res) => res.json())
-      .then(() => setTasks(tasks.filter((task) => task.id !== id)));
-  };
+      .then(() => setTasks(tasks.filter((task) => task.id !== id)))
+      .catch((error) => console.error("Error deleting task:", error));
+  }; 
 
   if (status === "loading") {
     return (
