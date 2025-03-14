@@ -86,13 +86,16 @@ export default function Home() {
         Task Manager
       </Typography>
       <Typography variant="h6" gutterBottom>
-        Stay organized and boost your <Typography component="span" style={{ fontWeight: 'bold' }}>productivity</Typography> with our Task Manager. Easily <Typography component="span" style={{ fontWeight: 'bold' }}>add</Typography>, <Typography component="span" style={{ fontWeight: 'bold' }}>view</Typography>, and <Typography component="span" style={{ fontWeight: 'bold' }}>delete</Typography> tasks, and ensure your tasks are free from <Typography component="span" style={{ fontWeight: 'bold' }}>negative sentiment</Typography> with our built-in sentiment analysis.
+        Stay organized and boost your <Typography component="span" style={{ fontWeight: 'bold' }}>productivity</Typography> with our Task Manager. Easily <Typography component="span" style={{ fontWeight: 'bold' }}>add</Typography>, <Typography component="span" style={{ fontWeight: 'bold' }}>view</Typography>, and <Typography component="span" style={{ fontWeight: 'bold' }}>manage</Typography> tasks, and ensure your tasks are free from <Typography component="span" style={{ fontWeight: 'bold' }}>negative sentiment</Typography> with our built-in sentiment analysis.  Take control of your workflow and achieve more every day!
       </Typography>
 
       {session ? (
         <>
         <Typography variant="h6">
-          Welcome, <strong>{session.user.name}</strong>!
+         Welcome, <strong>{session.user?.username || "Guest"}</strong>!
+        </Typography>
+         <Typography variant="subtitle1" gutterBottom>
+         View your tasks or add a new one to stay on track!
         </Typography>
         <Button variant="contained" color="secondary" onClick={() => signOut()}>
           Logout
@@ -102,7 +105,13 @@ export default function Home() {
       </>
     ) : (
       <>
-        <Typography variant="h6">Sign in to manage your tasks.</Typography>
+        {/* Added Motivational Messages */}
+        <Typography variant="h5" gutterBottom style={{ marginTop: "20px", fontWeight: "bold" }}>
+            Join us and start organizing your day!
+          </Typography>
+          <Typography variant="subtitle1" gutterBottom>
+           Already have an account? Sign in to take control of your productivity!
+          </Typography>
         <Button variant="contained" color="primary" onClick={() => signIn()}>
           Login
         </Button>
