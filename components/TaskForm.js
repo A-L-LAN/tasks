@@ -31,10 +31,23 @@ export default function TaskForm({ onAdd, onUpdate, editingTask, clearEditing })
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (model) {
-      const predictions = await model.classify([task]);
-      const toxic = predictions.some(pred => pred.results.some(res => res.match));
-      if (toxic) {
-        setError('Task contains negative sentiment. Please revise.');
+      try {
+        const predictions = await model.classify([task]);
+
+        const toxicCategories = predictions
+          .flatMap(pred => 
+            pred.results
+              .filter(res => res.match)
+              .map(() => pred.label)
+          );
+
+        if (toxicCategories.length > 0) {
+          setError(`Task contains inappropriate content: ${toxicCategories.join(', ')}`);
+          setSnackbarOpen(true);
+          return;
+        }
+      } catch (err) {
+        setError('Error classifying the task. Please try again.');
         setSnackbarOpen(true);
         return;
       }
